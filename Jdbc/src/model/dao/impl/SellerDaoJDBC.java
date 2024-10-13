@@ -17,6 +17,7 @@ import model.entities.Seller;
 
 public class SellerDaoJDBC implements SellerDao{
 
+    //Connection to the DB, its done on the DaoFactory class
     private Connection conn;
 
 
@@ -27,33 +28,36 @@ public class SellerDaoJDBC implements SellerDao{
     @Override
     public void insert(Seller obj) {
 
-
+        //Prepared statement - prepares the SQL statement to be executed
         PreparedStatement st = null;
 
         try {
-
+            //SQL creation, ALWAYS needs a space in the end of each line
             st = conn.prepareStatement(
                 "INSERT INTO seller "
                 +"(Name, Email, BirthDate, BaseSalary, DepartmentId) "
                 +"VALUES "
                 +"(?, ?, ?, ?, ?)",
-                java.sql.Statement.RETURN_GENERATED_KEYS
+                java.sql.Statement.RETURN_GENERATED_KEYS //Returns the generated key (Id)
             );
-
+            //Sets used to replace the "?" in the SQL statement
             st.setString(1, obj.getName());
             st.setString(2, obj.getEmail());
             st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
             st.setDouble(4, obj.getBaseSalary());
             st.setInt(5, obj.getDepartment().getId());
-
+            //Executes the SQL statement
+            //executeUpdate() - always used to insert, update or delete and returns the number of rows affected
             int rowsAffected = st.executeUpdate();
 
             if(rowsAffected > 0){
+                //Gets the generated key (Id) and sets it to the object
+                //ResultSet - always used to get the return of the SQL statement
                 ResultSet rs = st.getGeneratedKeys();
                 if (rs.next()) {
+                    //1 = first column
                     int id = rs.getInt(1);
                     obj.setId(id);
-
                 }
                 DB.closeResultSet(rs);
             }else{
@@ -128,6 +132,7 @@ public class SellerDaoJDBC implements SellerDao{
     public Seller findById(Integer id) {
 
         PreparedStatement st = null;
+        //ResultSet - always used to get the return of the SQL statement
         ResultSet rs = null;
 
         try{
@@ -142,6 +147,7 @@ public class SellerDaoJDBC implements SellerDao{
             st.setInt(1,id);
             rs = st.executeQuery();
 
+            //If the result set has a next value, it means that the Id exists
             if(rs.next()){
                 Department dep = intantiateDepartment(rs);
                 Seller obj = intantiateSeller(rs,dep);
@@ -162,6 +168,7 @@ public class SellerDaoJDBC implements SellerDao{
 
     private Seller intantiateSeller(ResultSet rs, Department dep) throws SQLException {
         Seller obj = new Seller();
+        //Strings will always be the name of the column in the DB
         obj.setId(rs.getInt("Id"));
         obj.setName(rs.getString("Name"));
         obj.setEmail(rs.getString("Email"));
@@ -198,8 +205,11 @@ public class SellerDaoJDBC implements SellerDao{
             List<Seller> list = new ArrayList<>();
             Map<Integer, Department> map = new HashMap<>();
 
+            //While used as it can have more than one result to form a list
             while(rs.next()){
 
+                //Checks if the department already exists in the map
+                //null = doesnt exist else it already exists and will be used normally rather than created in the IF
                 Department dep = map.get(rs.getInt("DepartmentId"));
 
                 if (dep == null){

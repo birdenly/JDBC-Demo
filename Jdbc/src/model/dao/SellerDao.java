@@ -4,7 +4,7 @@ import java.util.List;
 
 import model.entities.Department;
 import model.entities.Seller;
-
+//Class for instancing the JDBC classes with the DB connection. only for this.
 public interface SellerDao {
 
     void insert(Seller obj);

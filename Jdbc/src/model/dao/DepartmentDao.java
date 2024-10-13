@@ -3,7 +3,7 @@ package model.dao;
 import java.util.List;
 
 import model.entities.Department;
-
+//Interface to be used on DaoFactory and rules for the JDBC classes.
 public interface DepartmentDao {
 
     void insert(Department obj);
