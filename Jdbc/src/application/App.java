@@ -40,5 +40,20 @@ public class App {
         sellerDao.insert(newSeller);
         System.out.println("Inserted. new id = " + newSeller.getId());
 
+        System.out.println("\n##### UPDATE #####");
+
+        seller = sellerDao.findById(1);
+
+        seller.setName("martha");
+        sellerDao.update(seller);
+
+        System.out.println("\nUpdate done");
+
+        System.out.println("\n##### DELETE #####");
+
+        sellerDao.deleteById(13);
+
+        System.out.println("\nDelete done");
+
     }
 }
